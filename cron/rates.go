@@ -75,7 +75,8 @@ func refreshRates() error {
 	}
 
 	// create or update to db rate table
-	rateDB := db.NewRateDB(db.NewClient())
+	dbClient, _ := db.NewClient()
+	rateDB := db.NewRateDB(dbClient)
 
 	for fromCurrency, fromRate := range result.Rates {
 		for toCurrency, toRate := range result.Rates {

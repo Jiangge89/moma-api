@@ -53,8 +53,13 @@ func (rh *RateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func NewRateHandler() *RateHandler {
-	return &RateHandler{
-		db: db.NewRateDB(db.NewClient()),
+func NewRateHandler() (*RateHandler, error) {
+	dbClient, err := db.NewClient()
+	if err != nil {
+		return nil, err
 	}
+
+	return &RateHandler{
+		db: db.NewRateDB(dbClient),
+	}, nil
 }
