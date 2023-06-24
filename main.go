@@ -49,9 +49,9 @@ func main() {
 	err = server.ListenAndServe()
 	if err != nil {
 		if err == http.ErrServerClosed {
-			log.Print("Server closed under request")
+			log.Printf("Server closed under request due to %v", err)
 		} else {
-			log.Fatal("Server closed unexpected")
+			log.Fatalf("Server closed unexpected due to %v", err)
 		}
 	}
 }
