@@ -14,10 +14,10 @@ import (
 
 func main() {
 	mux := http.NewServeMux()
-	mux.Handle("/rate", handler.NewRateHandler())
+	mux.Handle("/moma-api/rate", handler.NewRateHandler())
 
 	server := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":80",
 		Handler: mux,
 	}
 
