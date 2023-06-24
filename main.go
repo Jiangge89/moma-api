@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"moma-api/cron"
 	"moma-api/handler"
@@ -19,7 +18,7 @@ func main() {
 	mux := http.NewServeMux()
 	rateHandler, err := handler.NewRateHandler()
 	if err != nil {
-		fmt.Printf("server failed to start due to: %v", err)
+		log.Printf("server failed to start due to: %v\n", err)
 	}
 	mux.Handle("/moma-api/rate", rateHandler)
 
@@ -49,9 +48,9 @@ func main() {
 	err = server.ListenAndServe()
 	if err != nil {
 		if err == http.ErrServerClosed {
-			log.Printf("Server closed under request due to %v", err)
+			log.Printf("Server closed under request due to %v\n", err)
 		} else {
-			log.Fatalf("Server closed unexpected due to %v", err)
+			log.Fatalf("Server closed unexpected due to %v\n", err)
 		}
 	}
 }

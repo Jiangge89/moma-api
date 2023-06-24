@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"moma-api/db"
 	"net/http"
 	"strconv"
@@ -38,6 +39,7 @@ func (rh *RateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	rate, err := rh.db.GetRate(ctx, fromCode, toCode)
 	if err != nil {
+		log.Printf("fail to get rate from DB due to %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -45,7 +47,7 @@ func (rh *RateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(rate)
 	if err != nil {
-
+		log.Printf("fail to encode rate due to %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
