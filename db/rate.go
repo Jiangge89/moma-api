@@ -7,12 +7,12 @@ import (
 )
 
 type Rate struct {
-	ID        int
-	FromCode  string
-	ToCode    string
-	Rate      float32
-	CreatedAt int64
-	UpdatedAt int64
+	ID        int     `json:"id"`
+	FromCode  string  `json:"from_code"`
+	ToCode    string  `json:"to_code"`
+	Rate      float32 `json:"rate"`
+	CreatedAt int64   `json:"created_at"`
+	UpdatedAt int64   `json:"updated_at"`
 }
 
 type RateDB struct {
