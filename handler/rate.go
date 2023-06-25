@@ -45,7 +45,8 @@ func (rh *RateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(rate)
+	resp := NewResponse(0, rate, "")
+	err = json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		log.Printf("fail to encode rate due to %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
