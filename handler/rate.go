@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"moma-api/db"
+	"moma-api/db/cache"
 	"net/http"
 	"strconv"
 	"strings"
@@ -12,7 +13,7 @@ import (
 )
 
 type RateHandler struct {
-	db db.RateDB
+	db db.RateI
 }
 
 func (rh *RateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -57,12 +58,7 @@ func (rh *RateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewRateHandler() (*RateHandler, error) {
-	dbClient, err := db.NewClient()
-	if err != nil {
-		return nil, err
-	}
-
 	return &RateHandler{
-		db: db.NewRateDB(dbClient),
+		db: cache.NewRateCache(),
 	}, nil
 }

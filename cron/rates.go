@@ -6,12 +6,13 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"moma-api/db"
+	"moma-api/db/cache"
 	"net/http"
 	"time"
 )
 
 func RefreshRates(ticker *time.Ticker, done chan bool) {
+	fmt.Printf("start loop to refresh rates")
 	go func() {
 		err := refreshRates()
 		if err != nil {
@@ -45,6 +46,7 @@ type Result struct {
 }
 
 func refreshRates() error {
+	fmt.Sprintf("start to refresh rates")
 	// get rates from remote
 	req, err := http.NewRequest("GET", fmt.Sprintf(url, appID), nil)
 	if err != nil {
@@ -74,9 +76,10 @@ func refreshRates() error {
 		return errors.New("get 0 rates from third-party")
 	}
 
+	fmt.Sprintf("successfully fetched rates: %v", result.Rates)
+
 	// create or update to db rate table
-	dbClient, _ := db.NewClient()
-	rateDB := db.NewRateDB(dbClient)
+	rateDB := cache.NewRateCache()
 
 	for fromCurrency, fromRate := range result.Rates {
 		for toCurrency, toRate := range result.Rates {
