@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"moma-api/cron"
 	"moma-api/handler"
@@ -22,8 +23,13 @@ func main() {
 	}
 	mux.Handle("/moma-api/rate", rateHandler)
 
+	port := os.Getenv("PORT")
+	if len(port) == 0 {
+		port = "80"
+	}
+
 	server := &http.Server{
-		Addr:    ":80",
+		Addr:    fmt.Sprintf(":%s", port),
 		Handler: mux,
 	}
 
