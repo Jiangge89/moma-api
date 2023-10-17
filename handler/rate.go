@@ -13,7 +13,7 @@ import (
 )
 
 type RateHandler struct {
-	db db.RateI
+	DB db.RateI
 }
 
 func (rh *RateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +38,7 @@ func (rh *RateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		cancel()
 	}()
 
-	rate, err := rh.db.GetRate(ctx, fromCode, toCode)
+	rate, err := rh.DB.GetRate(ctx, fromCode, toCode)
 	if err != nil {
 		log.Printf("fail to get rate from DB due to %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -59,6 +59,6 @@ func (rh *RateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func NewRateHandler() (*RateHandler, error) {
 	return &RateHandler{
-		db: cache.NewRateCache(),
+		DB: cache.NewRateCache(),
 	}, nil
 }

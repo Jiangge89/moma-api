@@ -6,15 +6,15 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"moma-api/db/cache"
+	"moma-api/db"
 	"net/http"
 	"time"
 )
 
-func RefreshRates(ticker *time.Ticker, done chan bool) {
-	fmt.Printf("start loop to refresh rates")
+func RefreshRates(db db.RateI, ticker *time.Ticker, done chan bool) {
+	fmt.Printf("start loop to refresh rates \n")
 	go func() {
-		err := refreshRates()
+		err := refreshRates(db)
 		if err != nil {
 			fmt.Printf("refresh rates failed due to: %v \n", err)
 		}
@@ -26,7 +26,7 @@ func RefreshRates(ticker *time.Ticker, done chan bool) {
 				fmt.Println("Ticker stopped")
 				return
 			case <-ticker.C:
-				err := refreshRates()
+				err := refreshRates(db)
 				if err != nil {
 					fmt.Printf("refresh rates failed due to: %v \n", err)
 				}
@@ -45,8 +45,8 @@ type Result struct {
 	Rates map[string]float32 `json:"rates"`
 }
 
-func refreshRates() error {
-	fmt.Sprintf("start to refresh rates")
+func refreshRates(db db.RateI) error {
+	fmt.Printf("start to refresh rates \n")
 	// get rates from remote
 	req, err := http.NewRequest("GET", fmt.Sprintf(url, appID), nil)
 	if err != nil {
@@ -76,15 +76,12 @@ func refreshRates() error {
 		return errors.New("get 0 rates from third-party")
 	}
 
-	fmt.Sprintf("successfully fetched rates: %v", result.Rates)
-
-	// create or update to db rate table
-	rateDB := cache.NewRateCache()
+	fmt.Printf("successfully fetched rates: %v \n", result.Rates)
 
 	for fromCurrency, fromRate := range result.Rates {
 		for toCurrency, toRate := range result.Rates {
 			rate := toRate / fromRate
-			err = rateDB.AddRate(context.Background(), fromCurrency, toCurrency, rate)
+			err = db.AddRate(context.Background(), fromCurrency, toCurrency, rate)
 			if err != nil {
 				return err
 			}

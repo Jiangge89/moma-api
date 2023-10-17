@@ -48,7 +48,7 @@ func main() {
 
 	// create cron job to refresh rates
 	ticker := time.NewTicker(time.Hour * 24)
-	cron.RefreshRates(ticker, closeRateRefresher)
+	cron.RefreshRates(rateHandler.DB, ticker, closeRateRefresher)
 
 	log.Println("Starting HTTP server...")
 	err = server.ListenAndServe()
