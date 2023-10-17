@@ -37,7 +37,7 @@ func RefreshRates(db db.RateI, ticker *time.Ticker, done chan bool) {
 
 const (
 	appID = "872c2cd1f349476c8a93a24ea89f527c"
-	url   = "https://openexchangerates.org/api/latest.json?app_id=%s"
+	url   = "http://openexchangerates.org/api/latest.json?app_id=%s"
 )
 
 type Result struct {
