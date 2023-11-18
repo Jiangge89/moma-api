@@ -17,11 +17,18 @@ const ()
 
 func main() {
 	mux := http.NewServeMux()
+
 	rateHandler, err := handler.NewRateHandler()
 	if err != nil {
-		log.Printf("server failed to start due to: %v\n", err)
+		log.Fatalf("fail to create rate handler due to: %v\n", err)
 	}
 	mux.Handle("/moma-api/rate", rateHandler)
+
+	verifyHandler, err := handler.NewVerifyHandler()
+	if err != nil {
+		log.Fatalf("fail to create verify handler due to: %v", err)
+	}
+	mux.Handle("/moma-api/verify_receipt", verifyHandler)
 
 	port := os.Getenv("PORT")
 	if len(port) == 0 {
