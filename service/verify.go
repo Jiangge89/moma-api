@@ -28,7 +28,7 @@ func VerifyReceipt(transactionId string) error {
 		KeyID:      AccountPrivateKeyId,
 		BundleID:   BundleId,
 		Issuer:     KeyIssuer,
-		Sandbox:    false,
+		Sandbox:    true,
 	}
 	a := appstore.NewStoreClient(c)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
@@ -54,6 +54,7 @@ func VerifyReceipt(transactionId string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Printf("GetTransactionInfo returns the first of transactions: %+v \n", *transactions[0])
 
 	if transactions[0].TransactionID == transactionId {
 		// the transaction is valid

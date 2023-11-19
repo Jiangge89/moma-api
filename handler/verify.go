@@ -11,26 +11,20 @@ import (
 type VerifyHandler struct {
 }
 
-type verifyReceiptResult struct {
-	Success bool `json:"success"`
-}
-
 func (vh *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	transactionId := r.URL.Query().Get("transaction_id")
 
-	resData := verifyReceiptResult{}
 	code := success
 	errMsg := ""
 
 	err := service.VerifyReceipt(transactionId)
 
 	if err != nil {
-		resData.Success = false
 		code = errFailVerifyReceipt
 		errMsg = fmt.Sprintf("fail to verify receipt due to: %v\n", err)
 	}
 
-	resp := NewResponse(code, resData, errMsg)
+	resp := NewResponse(code, nil, errMsg)
 
 	err = json.NewEncoder(w).Encode(resp)
 	if err != nil {
