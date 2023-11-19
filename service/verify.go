@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/richzw/appstore"
 	"os"
+	"time"
 )
 
 const (
@@ -30,11 +31,20 @@ func VerifyReceipt(transactionId string) error {
 		Sandbox:    false,
 	}
 	a := appstore.NewStoreClient(c)
-	response, err := a.GetTransactionInfo(context.TODO(), transactionId)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer func() {
+		cancel()
+	}()
+	response, err := a.GetTransactionInfo(ctx, transactionId)
 	if err != nil {
 		c.Sandbox = true // retry with sandbox
 		a = appstore.NewStoreClient(c)
-		response, err = a.GetTransactionInfo(context.TODO(), transactionId)
+		ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+		defer func() {
+			cancel()
+		}()
+
+		response, err = a.GetTransactionInfo(ctx, transactionId)
 		if err != nil {
 			return err
 		}

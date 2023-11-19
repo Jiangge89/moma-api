@@ -35,8 +35,9 @@ func main() {
 		port = "80"
 	}
 
+	addr := fmt.Sprintf(":%s", port)
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%s", port),
+		Addr:    addr,
 		Handler: mux,
 	}
 
@@ -57,7 +58,7 @@ func main() {
 	ticker := time.NewTicker(time.Hour * 24)
 	cron.RefreshRates(rateHandler.DB, ticker, closeRateRefresher)
 
-	log.Println("Starting HTTP server...")
+	log.Printf("Starting HTTP server with addr: %v... \n", addr)
 	err = server.ListenAndServe()
 	if err != nil {
 		if err == http.ErrServerClosed {
