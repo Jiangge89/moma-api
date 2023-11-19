@@ -32,7 +32,12 @@ func VerifyReceipt(transactionId string) error {
 	a := appstore.NewStoreClient(c)
 	response, err := a.GetTransactionInfo(context.TODO(), transactionId)
 	if err != nil {
-		return err
+		c.Sandbox = true // retry with sandbox
+		a = appstore.NewStoreClient(c)
+		response, err = a.GetTransactionInfo(context.TODO(), transactionId)
+		if err != nil {
+			return err
+		}
 	}
 
 	transactions, err := a.ParseSignedTransactions([]string{response.SignedTransactionInfo})
