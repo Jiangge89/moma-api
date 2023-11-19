@@ -12,7 +12,7 @@ type VerifyHandler struct {
 }
 
 type verifyReceiptResult struct {
-	success bool `json:"success"`
+	Success bool `json:"success"`
 }
 
 func (vh *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +25,7 @@ func (vh *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err := service.VerifyReceipt(transactionId)
 
 	if err != nil {
-		resData.success = false
+		resData.Success = false
 		code = errFailVerifyReceipt
 		errMsg = fmt.Sprintf("fail to verify receipt due to: %v\n", err)
 	}
