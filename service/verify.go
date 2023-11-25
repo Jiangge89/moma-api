@@ -46,20 +46,23 @@ func VerifyReceipt(transactionId string) error {
 
 		response, err = a.GetTransactionInfo(ctx, transactionId)
 		if err != nil {
+			fmt.Printf("fail get transactions due to: %v\n", err)
 			return err
 		}
 	}
 
 	transactions, err := a.ParseSignedTransactions([]string{response.SignedTransactionInfo})
 	if err != nil {
+		fmt.Printf("fail parse transactions due to: %v\n", err)
 		return err
 	}
 	fmt.Printf("GetTransactionInfo returns the first of transactions: %+v \n", *transactions[0])
 
-	if transactions[0].TransactionID == transactionId {
+	if transactions[0].TransactionID == transactionId && transactions[0].ExpiresDate > time.Now().UnixNano()/1e6 {
 		// the transaction is valid
 		return nil
 	}
 
-	return fmt.Errorf("transaction not match, expect: %v but got %v", transactions[0].TransactionID, transactionId)
+	return fmt.Errorf("transaction not match or expired, expect: %v but got %v, expired date is: %v",
+		transactions[0].TransactionID, transactionId, transactions[0].ExpiresDate)
 }
