@@ -17,10 +17,10 @@ const (
 	BundleId = "duftee-moma-free"
 )
 
-func VerifyReceipt(transactionId string) error {
+func VerifyReceipt(transactionId string) (expiredDate int64, err error) {
 	authKey, err := os.ReadFile(AccountPrivateKeyFile)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	c := &appstore.StoreConfig{
@@ -47,22 +47,24 @@ func VerifyReceipt(transactionId string) error {
 		response, err = a.GetTransactionInfo(ctx, transactionId)
 		if err != nil {
 			fmt.Printf("fail get transactions due to: %v\n", err)
-			return err
+			return 0, err
 		}
 	}
 
 	transactions, err := a.ParseSignedTransactions([]string{response.SignedTransactionInfo})
 	if err != nil {
 		fmt.Printf("fail parse transactions due to: %v\n", err)
-		return err
+		return 0, err
 	}
 	fmt.Printf("GetTransactionInfo returns the first of transactions: %+v \n", *transactions[0])
 
 	if transactions[0].TransactionID == transactionId && transactions[0].ExpiresDate > time.Now().UnixNano()/1e6 {
 		// the transaction is valid
-		return nil
+		return transactions[0].ExpiresDate, nil
 	}
 
-	return fmt.Errorf("transaction not match or expired, expect: %v but got %v, expired date is: %v",
+	err = fmt.Errorf("transaction not match or expired, expect: %v but got %v, expired date is: %v",
 		transactions[0].TransactionID, transactionId, transactions[0].ExpiresDate)
+
+	return 0, err
 }
