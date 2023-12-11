@@ -16,12 +16,17 @@ type VerifyReceiptResponse struct {
 }
 
 func (vh *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	transactionId := r.URL.Query().Get("transaction_id")
+	//transactionId := r.URL.Query().Get("transaction_id")
+	originTransactionId := r.URL.Query().Get("origin_transaction_id")
+	if len(originTransactionId) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
 	code := success
 	errMsg := ""
 
-	expiredDate, err := service.VerifyReceipt(transactionId)
+	expiredDate, err := service.VerifyReceipt(originTransactionId)
 	if err != nil {
 		code = errFailVerifyReceipt
 		errMsg = fmt.Sprintf("fail to verify receipt due to: %v\n", err)
