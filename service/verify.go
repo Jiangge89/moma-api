@@ -52,7 +52,7 @@ func GetALLSubscriptionStatuses(originTransactionId string) (expiredDate int64, 
 
 		response, err = a.GetALLSubscriptionStatuses(ctx, originTransactionId)
 		if err != nil {
-			fmt.Printf("fail get transactions due to: %v\n", err)
+			fmt.Printf("fail get transactions for id: %v due to: %v\n", originTransactionId, err)
 			return 0, err
 		}
 	}
@@ -67,11 +67,11 @@ func GetALLSubscriptionStatuses(originTransactionId string) (expiredDate int64, 
 		}
 
 		if len(data.LastTransactions) < 1 {
-			return 0, fmt.Errorf("fail since data.LastTransactions in all subscription status response is empty")
+			return 0, fmt.Errorf("fail since data.LastTransactions in GetALLSubscriptionStatuses response is empty")
 		}
 
 		if data.LastTransactions[0].Status != 1 {
-			return 0, fmt.Errorf("fail since last transaction status is %d in all subscription status is empty", data.LastTransactions[0].Status)
+			return 0, fmt.Errorf("fail since last transaction status is %d in GetALLSubscriptionStatuses response", data.LastTransactions[0].Status)
 		}
 
 		signedTransaction := data.LastTransactions[0].SignedTransactionInfo
@@ -80,7 +80,7 @@ func GetALLSubscriptionStatuses(originTransactionId string) (expiredDate int64, 
 			fmt.Printf("fail parse signed transaction: %v due to: %v\n", signedTransaction, err)
 			return 0, err
 		}
-		fmt.Printf("GetALLSubscriptionStatuses returns transaction: %+v \n", transaction)
+		fmt.Printf("GetALLSubscriptionStatuses for id: %v returns transaction: %+v \n", originTransactionId, transaction)
 
 		return transaction[0].ExpiresDate, nil
 	}
@@ -118,17 +118,17 @@ func GetTransactionInfo(transactionId string) (expiredDate int64, err error) {
 
 		response, err = a.GetTransactionInfo(ctx, transactionId)
 		if err != nil {
-			fmt.Printf("fail get transactions due to: %v\n", err)
+			fmt.Printf("fail get transactions for id: %v due to: %v\n", transactionId, err)
 			return 0, err
 		}
 	}
 
 	transactions, err := a.ParseSignedTransactions([]string{response.SignedTransactionInfo})
 	if err != nil {
-		fmt.Printf("fail parse transactions due to: %v\n", err)
+		fmt.Printf("fail parse transactions: %v due to: %v\n", response.SignedTransactionInfo, err)
 		return 0, err
 	}
-	fmt.Printf("GetTransactionInfo returns transactions: %+v \n", transactions)
+	fmt.Printf("GetTransactionInfo for id: %v returns transactions: %+v \n", transactionId, transactions)
 
 	if transactions[0].TransactionID == transactionId && transactions[0].ExpiresDate > time.Now().UnixNano()/1e6 {
 		// the transaction is valid
