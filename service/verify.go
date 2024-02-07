@@ -43,6 +43,8 @@ func GetALLSubscriptionStatuses(originTransactionId string) (expiredDate int64, 
 	}()
 	response, err := a.GetALLSubscriptionStatuses(ctx, originTransactionId)
 	if err != nil {
+		fmt.Printf("[Err] fail get transactions for id: %v in production mode due to: %v, will try to request in sandbox mode then.\n", originTransactionId, err)
+
 		c.Sandbox = true // retry with sandbox
 		a = appstore.NewStoreClient(c)
 		ctx, cancel := context.WithTimeout(ctx, time.Second*10)
@@ -52,13 +54,13 @@ func GetALLSubscriptionStatuses(originTransactionId string) (expiredDate int64, 
 
 		response, err = a.GetALLSubscriptionStatuses(ctx, originTransactionId)
 		if err != nil {
-			fmt.Printf("fail get transactions for id: %v due to: %v\n", originTransactionId, err)
+			fmt.Printf("[Err] fail get transactions for id: %v in sandbox mode due to: %v\n", originTransactionId, err)
 			return 0, err
 		}
 	}
 
 	if len(response.Data) < 1 {
-		return 0, fmt.Errorf("fail since data in all subscription status response is empty")
+		return 0, fmt.Errorf("fail since data in GetALLSubscriptionStatuses response for transaction id>: %v is empty", originTransactionId)
 	}
 
 	for _, data := range response.Data {
@@ -67,20 +69,26 @@ func GetALLSubscriptionStatuses(originTransactionId string) (expiredDate int64, 
 		}
 
 		if len(data.LastTransactions) < 1 {
-			return 0, fmt.Errorf("fail since data.LastTransactions in GetALLSubscriptionStatuses response is empty")
+			return 0, fmt.Errorf("[Err] fail since data.LastTransactions in GetALLSubscriptionStatuses response is empty")
 		}
 
+		fmt.Printf("[INFO] last transaction in GetALLSubscriptionStatuses response is %v \n", data.LastTransactions[0])
+
 		if data.LastTransactions[0].Status != 1 {
-			return 0, fmt.Errorf("fail since last transaction status is %d in GetALLSubscriptionStatuses response", data.LastTransactions[0].Status)
+			return 0, fmt.Errorf("[Err] fail since last transaction status is %d in GetALLSubscriptionStatuses response", data.LastTransactions[0].Status)
 		}
 
 		signedTransaction := data.LastTransactions[0].SignedTransactionInfo
 		transaction, err := a.ParseSignedTransactions([]string{signedTransaction})
 		if err != nil {
-			fmt.Printf("fail parse signed transaction: %v due to: %v\n", signedTransaction, err)
+			fmt.Printf("[Err] fail parse signed transaction: %v due to: %v\n", signedTransaction, err)
 			return 0, err
 		}
-		fmt.Printf("GetALLSubscriptionStatuses for id: %v returns transaction: %+v \n", originTransactionId, transaction)
+
+		fmt.Printf("[INFO] GetALLSubscriptionStatuses for id: %v returns %v transactions: \n", originTransactionId, len(transaction))
+		for idx, t := range transaction {
+			fmt.Printf("%v transaction for id: %v is: %+v \n", idx, originTransactionId, t)
+		}
 
 		return transaction[0].ExpiresDate, nil
 	}
