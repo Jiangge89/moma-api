@@ -34,7 +34,7 @@ func GetALLSubscriptionStatuses(originTransactionId string) (expiredDate int64, 
 		KeyID:      AccountPrivateKeyId,
 		BundleID:   BundleId,
 		Issuer:     KeyIssuer,
-		Sandbox:    true,
+		Sandbox:    false,
 	}
 	a := appstore.NewStoreClient(c)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
@@ -52,9 +52,10 @@ func GetALLSubscriptionStatuses(originTransactionId string) (expiredDate int64, 
 			cancel()
 		}()
 
-		response, err = a.GetALLSubscriptionStatuses(ctx, originTransactionId)
-		if err != nil {
-			fmt.Printf("[Err] fail get transactions for id: %v in sandbox mode due to: %v\n", originTransactionId, err)
+		var sandboxErr error
+		response, sandboxErr = a.GetALLSubscriptionStatuses(ctx, originTransactionId)
+		if sandboxErr != nil {
+			fmt.Printf("[Err] fail get transactions for id: %v in sandbox mode due to: %v, will return the production request err \n", originTransactionId, sandboxErr)
 			return 0, err
 		}
 	}
