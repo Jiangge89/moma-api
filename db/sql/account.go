@@ -14,8 +14,13 @@ type accountDB struct {
 	db *sql.DB
 }
 
-func NewAccountDB() db.AccountDB {
-	return &accountDB{}
+func NewAccountDB() (db.AccountDB, error) {
+	sqlCli, err := NewClient()
+	if err != nil {
+		return nil, err
+	}
+
+	return &accountDB{db: sqlCli}, nil
 }
 
 func (adb *accountDB) GetAccount(ctx context.Context, userID string) (*model.Account, error) {

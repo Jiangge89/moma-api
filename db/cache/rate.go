@@ -13,7 +13,7 @@ type RateCache struct {
 	rwMutex sync.RWMutex
 }
 
-func (r RateCache) GetRate(ctx context.Context, fromCode, toCode string) (*model.Rate, error) {
+func (r *RateCache) GetRate(ctx context.Context, fromCode, toCode string) (*model.Rate, error) {
 	r.rwMutex.RLock()
 
 	rate, ok := r.cache[fromCode+toCode]
@@ -27,7 +27,7 @@ func (r RateCache) GetRate(ctx context.Context, fromCode, toCode string) (*model
 	return &rate, nil
 }
 
-func (r RateCache) AddRate(ctx context.Context, fromCode, toCode string, rate float32) error {
+func (r *RateCache) AddRate(ctx context.Context, fromCode, toCode string, rate float32) error {
 	now := int64(time.Now().Nanosecond())
 	rateInfo := model.Rate{
 		FromCode:  fromCode,

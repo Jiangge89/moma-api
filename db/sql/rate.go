@@ -3,7 +3,6 @@ package sql
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"moma-api/db/model"
 	"time"
 )
@@ -21,7 +20,6 @@ func (r RateDB) GetRate(ctx context.Context, fromCode, toCode string) (*model.Ra
 	if err != nil {
 		return nil, err
 	}
-	return nil, fmt.Errorf("not exist")
 
 	return &rate, nil
 }

@@ -14,9 +14,9 @@ create table IF NOT EXISTS rate (
 
 create table IF NOT EXISTS account (
     id int not null AUTO_INCREMENT,
-    user_id string NOT NULL,
-    user_name string NOT NULL,
-    user_email string NOT NULL,
+    user_id varchar(256) NOT NULL,
+    user_name varchar(256) NOT NULL,
+    user_email varchar(512) NOT NULL,
     created_at int not null,
     updated_at int not null,
     primary key (`id`),

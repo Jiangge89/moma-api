@@ -34,7 +34,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("fail to create account handler due to: %v", err)
 	}
-	mux.Handle("/chill-api/account", accountHandler)
+	mux.HandleFunc("/chill-api/account/create", accountHandler.HandleCreate)
+	mux.HandleFunc("/chill-api/account/get", accountHandler.HandleGet)
 
 	port := os.Getenv("PORT")
 	if len(port) == 0 {

@@ -28,19 +28,7 @@ type AccountHandler struct {
 	DB db.AccountDB
 }
 
-// ServeHTTP handles routing
-func (rh *AccountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	switch r.URL.Path {
-	case "/chill-api/account/create":
-		rh.handleCreate(w, r)
-	case "/chill-api/account/get":
-		rh.handleGet(w, r)
-	default:
-		http.NotFound(w, r)
-	}
-}
-
-func (rh *AccountHandler) handleCreate(w http.ResponseWriter, r *http.Request) {
+func (rh *AccountHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Only POST method is supported", http.StatusMethodNotAllowed)
 		return
@@ -78,7 +66,7 @@ func (rh *AccountHandler) handleCreate(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte("Account created"))
 }
 
-func (rh *AccountHandler) handleGet(w http.ResponseWriter, r *http.Request) {
+func (rh *AccountHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 	userID := r.URL.Query().Get("user_id")
 
 	if len(userID) == 0 {
@@ -102,7 +90,12 @@ func (rh *AccountHandler) handleGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewAccountHandler() (*AccountHandler, error) {
+	accountDB, err := sql.NewAccountDB()
+	if err != nil {
+		return nil, err
+	}
+
 	return &AccountHandler{
-		DB: sql.NewAccountDB(),
+		DB: accountDB,
 	}, nil
 }
