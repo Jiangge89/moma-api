@@ -71,11 +71,13 @@ func (rh *AccountHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 
 	if len(userID) == 0 {
 		http.Error(w, "Missing required fields", http.StatusBadRequest)
+		return
 	}
 
 	account, err := rh.DB.GetAccount(r.Context(), userID)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to get data from database: %v", err), http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
