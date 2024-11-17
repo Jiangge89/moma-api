@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"moma-api/db"
+	"moma-api/db/model"
 	"time"
 )
 
@@ -12,8 +12,8 @@ type RateDB struct {
 	db *sql.DB
 }
 
-func (r RateDB) GetRate(ctx context.Context, fromCode, toCode string) (*db.Rate, error) {
-	var rate db.Rate
+func (r RateDB) GetRate(ctx context.Context, fromCode, toCode string) (*model.Rate, error) {
+	var rate model.Rate
 	allFields := "id, from_code, to_code, rate, created_at, updated_at"
 	queryCmd := "select " + allFields + " from rate where from_code = ? and to_code = ?"
 	rows := r.db.QueryRowContext(ctx, queryCmd, fromCode, toCode)

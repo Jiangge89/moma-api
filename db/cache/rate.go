@@ -3,17 +3,17 @@ package cache
 import (
 	"context"
 	"fmt"
-	"moma-api/db"
+	"moma-api/db/model"
 	"sync"
 	"time"
 )
 
 type RateCache struct {
-	cache   map[string]db.Rate
+	cache   map[string]model.Rate
 	rwMutex sync.RWMutex
 }
 
-func (r RateCache) GetRate(ctx context.Context, fromCode, toCode string) (*db.Rate, error) {
+func (r RateCache) GetRate(ctx context.Context, fromCode, toCode string) (*model.Rate, error) {
 	r.rwMutex.RLock()
 
 	rate, ok := r.cache[fromCode+toCode]
@@ -29,7 +29,7 @@ func (r RateCache) GetRate(ctx context.Context, fromCode, toCode string) (*db.Ra
 
 func (r RateCache) AddRate(ctx context.Context, fromCode, toCode string, rate float32) error {
 	now := int64(time.Now().Nanosecond())
-	rateInfo := db.Rate{
+	rateInfo := model.Rate{
 		FromCode:  fromCode,
 		ToCode:    toCode,
 		Rate:      rate,
@@ -50,6 +50,6 @@ func (r RateCache) AddRate(ctx context.Context, fromCode, toCode string, rate fl
 
 func NewRateCache() *RateCache {
 	return &RateCache{
-		cache: make(map[string]db.Rate, 10000),
+		cache: make(map[string]model.Rate, 10000),
 	}
 }

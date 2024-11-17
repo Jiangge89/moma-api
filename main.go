@@ -30,6 +30,12 @@ func main() {
 	}
 	mux.Handle("/moma-api/verify_receipt", verifyHandler)
 
+	accountHandler, err := handler.NewAccountHandler()
+	if err != nil {
+		log.Fatalf("fail to create account handler due to: %v", err)
+	}
+	mux.Handle("/chill-api/account", accountHandler)
+
 	port := os.Getenv("PORT")
 	if len(port) == 0 {
 		port = "8080"
