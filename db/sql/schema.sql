@@ -11,3 +11,16 @@ create table IF NOT EXISTS rate (
     primary key (`id`),
     unique key `unique_code` (`from_code`,`to_code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='rate table';
+
+create table IF NOT EXISTS account (
+    id int not null AUTO_INCREMENT,
+    user_id string NOT NULL,
+    user_name string NOT NULL,
+    user_email string NOT NULL,
+    created_at int not null,
+    updated_at int not null,
+    primary key (`id`),
+    unique key `unique_user_id` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='account info';
+
+

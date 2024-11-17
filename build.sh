@@ -5,7 +5,7 @@ WHEN=`date '+%Y-%m-%d_%H:%M:%S'`
 
 mkdir -p output/bin/ output/conf 
 
-CGO_ENABLED=0 go build  -a -v -ldflags "-s -X main.GitSHA=${GIT_SHA} -X main.BuildTime=${WHEN}" -o output/bin/api 
+GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build  -a -v -ldflags "-s -X main.GitSHA=${GIT_SHA} -X main.BuildTime=${WHEN}" -o output/bin/api 
 chmod +x output/bin/api
 
 cp bootstrap.sh output/
